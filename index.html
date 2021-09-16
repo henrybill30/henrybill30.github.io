@@ -124,17 +124,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">6</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -192,6 +192,227 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://byhuang.cn/2021/09/16/redis-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.JPG">
+      <meta itemprop="name" content="BY HUANG">
+      <meta itemprop="description" content="BLOG BY HUANG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="_BY_">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/16/redis-1/" class="post-title-link" itemprop="url">redis学习（1）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-16 13:17:27" itemprop="dateCreated datePublished" datetime="2021-09-16T13:17:27+08:00">2021-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-09-17 01:56:54" itemprop="dateModified" datetime="2021-09-17T01:56:54+08:00">2021-09-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Redis基本介绍"><a href="#Redis基本介绍" class="headerlink" title="Redis基本介绍"></a>Redis基本介绍</h1><p>官网原文</p>
+<blockquote>
+<p>Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache, and message broker. Redis provides data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, and streams. Redis has built-in replication, Lua scripting, LRU eviction, transactions, and different levels of on-disk persistence, and provides high availability via Redis Sentinel and automatic partitioning with Redis Cluster.</p>
+</blockquote>
+<ul>
+<li>在内存中的数据存储，kv结构</li>
+<li>可以作为内存数据库、缓存、消息broker</li>
+<li>提供多种数据结构，后面详细介绍</li>
+<li>复制、Lua脚本、LRU置换、事务、不同级别的持久化</li>
+<li>通过Redis哨兵机制和自动分片在集群中提供高性能服务</li>
+</ul>
+<h1 id="Redis-Key"><a href="#Redis-Key" class="headerlink" title="Redis Key"></a>Redis Key</h1><p>可以用任何二进制序列来表示redis的key，有几个规则：</p>
+<ul>
+<li>不要过长，不仅占内存也会在查找时消耗性能</li>
+<li>不要过短</li>
+<li>试着确定一个key的模式(schema)</li>
+<li>key的最大size为512MB<h1 id="5种基本数据结构"><a href="#5种基本数据结构" class="headerlink" title="5种基本数据结构"></a>5种基本数据结构</h1><h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2>最简单的数据结构，和key一样为string类型，主要是两个命令<strong>SET</strong>和<strong>GET</strong></li>
+</ul>
+<p>SET命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> key value [EX second | PX millisecond | EXAT timestamp | PXAT timestamp] [NX | XX] [GET]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>EX 多少秒后过期</li>
+<li>PX 多少毫秒后过期</li>
+<li>EXAT 在多少秒过期 timestamp格式</li>
+<li>PXAT 在多少毫秒过期 timestamp格式</li>
+<li>NX 如果key存在则不set</li>
+<li>XX 不论key是否存在都可以set，若存在就覆盖</li>
+<li>GET 返回之前的value，若没有则为nil</li>
+</ul>
+<p>GET命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET key</span><br></pre></td></tr></table></figure><br>获取对应key的value</p>
+<p>其他命令</p>
+<ul>
+<li>INCR, INCRBY 增加一个数字 64bit数字</li>
+<li>DECR, DECRBY 减少一个数字 64bit数字</li>
+<li>GETSET set一个值并返回旧值</li>
+<li>MGET, MSET 批量set和get</li>
+<li>EXISTS 是否存在value</li>
+<li>DEL 删除key</li>
+<li>TYPE 返回value的类型</li>
+</ul>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><p>基于Linked List实现的list数据结构，主要命令LPUSH、RPUSH、LPOP、RPOP、RLANGE</p>
+<ul>
+<li>LPUSH 向列表头添加元素</li>
+<li>RPUSH 向列表尾添加元素</li>
+<li>RLANGE key start end   查看列表元素</li>
+<li>LPOP 从列表头去除元素</li>
+<li>RPOP 从列表尾去除元素</li>
+</ul>
+<p>以上为list的基本操作，list的用途有以下两种</p>
+<ul>
+<li>用作存储用户最近更新的内容，如最新发布的10篇文章等</li>
+<li>用作两个进程间的通信，如作为生产者/消费者中的队列</li>
+</ul>
+<p>以下为一些进阶操作</p>
+<ul>
+<li><p>LTRIM 可以限制list的长度，使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ltrim key start end <span class="comment"># start为list的起始，end为list的终止</span></span><br></pre></td></tr></table></figure>
+<p>trim的原理是取范围的元素组成新的list，再删除原来的list</p>
+</li>
+<li><p>BRPOP 等待弹出元素</p>
+</li>
+</ul>
+<p>作为阻塞队列时使用，在生产者/消费者模式中，如果生产者一直没有生产，消费者取不出来时就需要不断通过轮询来判断是否有新元素，这样比较消耗性能，可以用brpop命令，具体为：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brpop key sec <span class="comment"># sec为等待的时间，如果在这个时间内获取不到元素就返回nil，0为无限等待</span></span><br></pre></td></tr></table></figure></p>
+<p>redis中会自动创建和销毁list，主要有以下三个规则：</p>
+<ul>
+<li>向一个list中添加元素时，如果key不存在，自动创建</li>
+</ul>
+<p><img src="/2021/09/16/redis-1/lsit1.png" alt="list1"></p>
+<ul>
+<li>从一个list中弹出元素时，如果list为空，则自动删除</li>
+</ul>
+<p><img src="/2021/09/16/redis-1/list2.png" alt="list2"></p>
+<ul>
+<li>对于只读命令或是删除命令，如果key值不存在，则返回的结果均按照空列表处理</li>
+</ul>
+<p><img src="/2021/09/16/redis-1/lsit3.png" alt="lsit3"></p>
+<h2 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h2><p>可以理解为Map<String, map<string, object>&gt;，有以下几个基本命令：</String,></p>
+<ul>
+<li>HSET</li>
+<li>HMSET</li>
+<li>HGET</li>
+<li>HMGET</li>
+</ul>
+<p><img src="/2021/09/16/redis-1/map1.png" alt="map"><br>具体看上面图片就行，更多命令可以参考<a target="_blank" rel="noopener" href="https://redis.io/commands#hash">官网</a>.</p>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>类似一个HashSet，主要可以用作存储“标签类数据”，主要的命令有：</p>
+<ul>
+<li>SADD key value1 value2 value3</li>
+<li>SMEMBERS key 查看所有元素</li>
+<li>SISMEMBER key value 查看元素是否在set中</li>
+<li>SINTER key1 [key2 key3 …] 交集</li>
+<li>SUNION key1 [key2 …] 并集</li>
+<li>SDIFF key1 [key2 …] 差集</li>
+<li>SUNIONSTORE key [key1, key2…] 把并集复制到key中</li>
+<li>SDIFFUNION key [key…]</li>
+<li>SINTERUNION key [key…]</li>
+<li>SPOP key 随机弹出元素</li>
+<li>SCARD key 我理解就是set中的元素个数</li>
+</ul>
+<h2 id="Sorted-Set"><a href="#Sorted-Set" class="headerlink" title="Sorted Set"></a>Sorted Set</h2><p>有些类似一个map结构，map的key是一个score，用score来进行排序，如果score相等，则按value来排序，主要命令</p>
+<ul>
+<li>ZADD key [NX | XX] [GT | LT] [CH] [INCR] score member […] 添加元素</li>
+<li>ZREM key member […] 删除元素</li>
+<li>ZRANGE key start end [WITHSCORES] 查看元素</li>
+<li>ZREVRANGE key start end [WITHSCORES] 反向输出</li>
+<li>ZRANGEBYSCORE key min max [WITHSCORE] [LIMIT offset count] 按score范围获取</li>
+<li>ZREMRANGEBYSCORE key min max 按范围删除</li>
+<li>ZRANK key member 返回该member在zset中的位置</li>
+<li>ZRANGEBYLEX key min max [limit offset count] 按value的字典序查找元素</li>
+</ul>
+<h1 id="3种特殊数据结构"><a href="#3种特殊数据结构" class="headerlink" title="3种特殊数据结构"></a>3种特殊数据结构</h1><h2 id="Bitmaps"><a href="#Bitmaps" class="headerlink" title="Bitmaps"></a>Bitmaps</h2><p>位图，就是设置一个512MB的String的每一bit的值，只能取0或1，主要命令：</p>
+<ul>
+<li>SETBIT key postion bit</li>
+<li>GETBIT key postion</li>
+<li>BITOP operation deskey key1 […] 把两个String做逻辑操作，operation有AND、OR、NOT</li>
+<li>BITPOS key bit [start [end]] 返回一个String中第一个0或1的位置</li>
+<li>BITCOUNT key 返回一个String中1的个数</li>
+</ul>
+<p>bitmap的用处</p>
+<ul>
+<li>任何形式的实时分析</li>
+<li>存储Boolean类型信息</li>
+</ul>
+<p>其他两个有HyperLogLogs和Geospatial</p>
+<h1 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h1><p>命令：</p>
+<ul>
+<li>OBJECT ENCODEING key […] 存储的一个数据的内部实现<br><img src="/2021/09/16/redis-1/data1.jpg" alt="data1"></li>
+</ul>
+<p>数据类型底层实现</p>
+<ul>
+<li>String类型：底层为简单动态字符串(Simple Dynamic String SDS) embstr</li>
+<li>List类型：底层为双向链表，无环，带长度计数器，实现多态 quicklist</li>
+<li>Hash类型：底层为压缩列表 ziplist</li>
+<li>Set类型： 底层为table，哈希冲突通过链表法解决，扩容机制为先创建一个2倍大小的table，再重新计算hash值再插入。当数据量大时会采用渐进式扩容，获取和更新操作在两个table中进行，插入操作在新table中进行。扩容时机：没有持久化时负载因子大于等于1，持久化时负载因子大于等于5 hashtable</li>
+<li>Sorted Set类型：底层为压缩列表</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -847,20 +1068,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -902,13 +1123,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">14k</span>
+    <span title="站点总字数">16k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
 
         
